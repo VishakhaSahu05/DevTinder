@@ -2,11 +2,28 @@ const express = require("express");
 
 const app = express();
 
-app.
-get("/ab?c",(req , res)=>{
-  //console.log(req.params);
-  res.send("abc");
+app.get("/user",(req , res , next)=>{
+  //console.log("Hello Server");
+  //res.send("abc");
+  next();
 });
+app.get("/user",(req , res , next)=>{
+    //res.send("hello");
+    next();
+  
+});
+app.get("/user",(req , res , next)=>{
+    
+    res.send("hello2");
+    next();
+  
+});
+app.get("/user",(req , res , next)=>{
+    //res.send("hello");
+    next();
+  
+});
+
 
 
 
