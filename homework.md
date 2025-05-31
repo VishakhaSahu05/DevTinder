@@ -15,3 +15,7 @@
 -.gitignore
 -create a remote repo on git
 -Push all code to remote origin
+-Play with routers and route extensions ex ./hello , ./hello/2 , /xyz
+-Order of routers matter a lot
+-Install postman app and make a workspace/collection > test API call
+-Write logic to handel GET , POST , PATCH , DELETE API calls and test them on postman 
