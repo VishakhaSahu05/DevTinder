@@ -19,3 +19,7 @@
 -Order of routers matter a lot
 -Install postman app and make a workspace/collection > test API call
 -Write logic to handel GET , POST , PATCH , DELETE API calls and test them on postman 
+-explore routing ad use of ?, + , () , * in the routes
+-use of regex in route /a/ , /.*fly$/
+-reading the query params in route
+-reading the dynamic routes

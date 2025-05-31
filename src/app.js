@@ -14,6 +14,8 @@ app.delete("/user" ,(req , res)=>{
 app.use("/user" ,(req ,res)=>{
     res.send("hello , hello , hello");
 });
+
+
 app.listen(3000 ,()=>{
   console.log("Server called successfully");
 });
