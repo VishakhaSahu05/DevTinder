@@ -28,4 +28,8 @@
 -Handling multiple route handlers - Play with the code
 -next()
 -next function errors along with res.send()
-
+-What is middleware? Why do we need it?
+-How is expressjs basically handels request behind the scenes
+-app.use vs app.all
+-write a dummy auth for admin 
+-write a dummy auth for all userAuth except/user/login
