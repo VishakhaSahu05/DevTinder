@@ -33,3 +33,4 @@
 -app.use vs app.all
 -write a dummy auth for admin 
 -write a dummy auth for all userAuth except/user/login
+-Error handling using app.use("/" , (err , req , res)=>{})
