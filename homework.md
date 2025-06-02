@@ -34,3 +34,17 @@
 -write a dummy auth for admin 
 -write a dummy auth for all userAuth except/user/login
 -Error handling using app.use("/" , (err , req , res)=>{})
+
+
+-Create a free cluster at mongoDb official website (Mongo Atlas)
+-install mangoose library
+-Connect you application to the dataBase "connection-url"/devTinder
+-call the connectDB function connect the database before starting your application at port 5000
+
+-create a userSchema & userModel
+-create signup API to add data to database
+-push some documents using API calls from postman
+-error handling using try and catch
+
+
+
