@@ -1,28 +1,28 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
-const User = require("./models/User");
+const User = require("./models/user");
+
+app.use(express.json());
+
 
 app.post("/signup" , async(req , res)=>{
-  const user = new User({
-    firstName : "Vivan",
-    LastName  : "vatsal",
-    emailId   : "vatsalvivan756@gmail.com",
-    password  : "vivan@123",
-    age : 21,
-    gender : "male",
-    
-  });
+  console.log(req.body);
+  const user = new User(req.body);
+
+
   try{
     await user.save();
       res.send("User Added Successfully!");
   }
   catch(err){
+    console.log("Error saving  the user" +err.message)
     res.status(400).send("Error saving  the user" +err.message);
 
   }
 
 });
+
 
 connectDB()
   .then(() => {
