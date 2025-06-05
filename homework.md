@@ -55,3 +55,15 @@
 -GET user by ID 
 -Create a delete user API
 -Difference between PATCH and PUT
+-API - update the user
+-Explore mongoose documentation for models methods 
+-What are the option in Model.findoneAndUpdate method , explore more about it
+-Api-update the user with emailId
+
+
+-Explore Schema types options from the documentation
+-add a required , unique , uppercase , lowercase , min , minLength ,default,trim
+-add default value
+-create a custom validation function for gender
+-Improve the DB schema -Put all appropriate validation on each field in Schema
+-Add timestamp to the user schema 
