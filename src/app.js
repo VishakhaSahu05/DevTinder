@@ -6,10 +6,20 @@ const User = require("./models/user");
 app.use(express.json());
 
 
-app.patch("/user" , async(req,res)=>{
-   const userId = req.body.userId;
+app.patch("/user/:userId" , async(req,res)=>{
+   const userId = req.params?.userId;
    const data = req.body;
    try{
+    const  AllowedUpdate = ["photourl" , "about" , "password" , "age" , "gender" , "skills" , "firstName" , "LastName"];
+    const  isUpdatedAllowed = Object.keys(data).every((k)=>
+    AllowedUpdate.includes(k)
+  );
+  if(!isUpdatedAllowed){
+    throw new Error ("Update not Allowed");
+  }
+  if(data.skills.length>5){
+    throw new Error("Skills cannot be more than 5");
+  }
     const user = await User.findByIdAndUpdate( userId,data, 
       {returnDocument :'before',
        runValidators : true,
