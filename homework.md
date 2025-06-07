@@ -68,5 +68,15 @@
 -Improve the DB schema -Put all appropriate validation on each field in Schema
 -Add timestamp to the user schema 
 -Add Api level validation on patch request & singup post api 
-- Data sanitiation -Add api validations for each fields
+-Data sanitiation -Add api validations for each fields
+-Install validator 
+-Explore use validator function
+-Never trust req.body
 
+
+
+-Validate data in singup API
+-Install bcrypt package
+-create a password hash using bcrypt.hash & save user with encrypted password
+-create login API
+-compare passwords and throw error if emails or password is invalid
