@@ -73,10 +73,18 @@
 -Explore use validator function
 -Never trust req.body
 
-
-
 -Validate data in singup API
 -Install bcrypt package
 -create a password hash using bcrypt.hash & save user with encrypted password
 -create login API
 -compare passwords and throw error if emails or password is invalid
+
+-install cookie parser
+-just sent a dummy cookie to user
+create GET /profile API and check if you get cookie back
+-install jsonwebtoken
+-//In login API ,after email and password validation create a JWT token and send it to user in cookies
+-read the cookies inside your profile API and find your logged in user
+-userAuth middleware
+-add the userAuth middleware in profile API and new sendConnection Request API
+-Set the expiry of jwt token and cookies to 7days
