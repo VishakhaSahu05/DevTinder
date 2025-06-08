@@ -88,3 +88,7 @@ create GET /profile API and check if you get cookie back
 -userAuth middleware
 -add the userAuth middleware in profile API and new sendConnection Request API
 -Set the expiry of jwt token and cookies to 7days
+
+-create userSchema method to getJwt() 
+-create userSchema to comparepasswords(passwordInputByUser)
+
