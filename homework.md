@@ -99,4 +99,18 @@
 - Create routers folder for managing auth ,profile , request routers
 - Create authRouter , profileRouter , requestRouter
 - Import these router in app.js
+- Create post /logout API
+- create PATCH /profile/edit
+- create PATCH /profile/password API => forgot password API
+- Make sure you validate  all the data in every post , patch APIs
+
+- Create connectionRequestSchema
+- send connection Request API
+- Proper validation of data
+- Think about all corner cases
+- $or query and $and query in moongoose
+- Schema.pre("save") function
+- Read more about indexes in Mongodb
+- Why we need index and what is the adv and disadv of creating index
+- Read article about compound indexes 
 
