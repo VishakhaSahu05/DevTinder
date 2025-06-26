@@ -1,4 +1,5 @@
 const validator = require("validator");
+const { validate } = require("../models/user");
 
 const validateSignupData = (req) => {
   const { firstName, LastName, emailId, password, age, gender, photoUrl } =
@@ -29,7 +30,12 @@ const validateEditProfileData = (req) => {
   }
   return true;
 };
+const validatePassword = (req)=>{
+  const {password} = req.body;
+    return validator.isStrongPassword(password);
+  };
 module.exports = {
   validateSignupData,
   validateEditProfileData,
+  validatePassword,
 };

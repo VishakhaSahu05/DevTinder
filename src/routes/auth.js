@@ -29,7 +29,21 @@ authRouter.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 8 * 3600000),
       });
 
-      res.send("login Successfully");
+      res.status(200).json({
+        message: "Login successful",
+        token: token,
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          LastName: user.LastName,
+          emailId: user.emailId,
+          age: user.age,
+          gender: user.gender,
+          photoUrl: user.photoUrl,
+          about: user.about,
+          skill: user.skills,
+        },
+      });
     }
   } catch (err) {
     res.status(404).send("Error : " + err.message);
@@ -59,17 +73,36 @@ authRouter.post("/signup", async (req, res) => {
       password: passwordHash,
     });
 
-    await user.save();
-    res.send("User Added Successfully!");
+    const savedUser = await user.save();
+    const token = await savedUser.getJWT();
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 360000),
+    });
+    res.status(200).json({
+      message: "Signup successful",
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        LastName: user.LastName,
+        emailId: user.emailId,
+        age: user.age,
+        gender: user.gender,
+        photoUrl: user.photoUrl,
+        about: user.about,
+        skill: user.skills,
+      },
+    });
   } catch (err) {
     res.status(400).send("Error saving  the user" + err.message);
   }
 });
+
 authRouter.post("/logout", async (req, res) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
-    
   });
   res.send("LogOut Successfully");
 });
+
 module.exports = authRouter;

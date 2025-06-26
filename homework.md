@@ -10,7 +10,6 @@
 - What is the use of "-g" while npm install
 - Diffrence between ceret and Tidle
 
-
 - intialize git-
 - .gitignore
 - create a remote repo on git
@@ -23,7 +22,6 @@
 - use of regex in route /a/ , /.*fly$/
 - reading the query params in route
 - reading the dynamic routes
-
 
 - Handling multiple route handlers - Play with the code
 - next()
@@ -113,4 +111,19 @@
 - Read more about indexes in Mongodb
 - Why we need index and what is the adv and disadv of creating index
 - Read article about compound indexes 
+- ALWAYS THINK ABOUT THE CORNER CASES
 
+- write code with proper validation for POST/request/review/:status/:requestId
+- Thought process - POST vs GET
+- Read about ref and populate
+- create GET /user/requests/received with all the check
+- create GET API user collection
+
+- Logic for GET/feed API
+- Explore the $nin , $and and other query operators
+
+## Notes
+- /feed?page=1&limit=10 => 1-10  => .skip(0)  & .limit(10);
+- /feed?page=2&limit=10 => 11-20 => .skip(10) & .limit(10);
+- /feed?page=3&limit=10 => 21-30 => .skip(20) & .limit(10);
+- skip = (page-1)*limit;
