@@ -1,3 +1,4 @@
+// routes/payment.js
 const express = require("express");
 const paymentRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
@@ -5,39 +6,33 @@ const razorpayInstance = require("../utils/razorpay");
 const Payment = require("../models/payment");
 const User = require("../models/user");
 const { membershipAmount } = require("../utils/constants");
-const {
-  validateWebhookSignature,
-} = require("razorpay/dist/utils/razorpay-utils");
+const crypto = require("crypto");
 
+// Create Razorpay order
 paymentRouter.post("/create", userAuth, async (req, res) => {
   try {
     const { membershipType } = req.body;
-    const type = membershipType.toLowerCase(); // normalize
-    const { firstName, LastName: lastName, emailId } = req.user;
+    const type = membershipType.toLowerCase();
+    const { firstName, lastName, emailId, _id } = req.user;
 
-    // Safety check
     if (!membershipAmount[type]) {
       return res.status(400).json({ error: "Invalid membership type" });
     }
 
     const amount = membershipAmount[type] * 100; // in paise
 
-    // Create Razorpay order
     const order = await razorpayInstance.orders.create({
       amount,
       currency: "INR",
-      receipt: "receipt#1",
+      receipt: `receipt_${Date.now()}`,
       notes: {
-        firstName,
-        lastName,
-        emailId,
+        userId: _id.toString(),
         membershipType: type,
       },
     });
 
-    // Save in DB
     const payment = new Payment({
-      userId: req.user._id,
+      userId: _id,
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
@@ -46,59 +41,57 @@ paymentRouter.post("/create", userAuth, async (req, res) => {
       notes: {
         firstName,
         lastName,
+        membershipType: type,
       },
     });
 
-    const savedPayment = await payment.save();
+    await payment.save();
 
-    // Send response to frontend
     res.json({
-      amount: savedPayment.amount,
-      currency: savedPayment.currency,
-      orderId: savedPayment.orderId,
-      notes: savedPayment.notes,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
       keyId: process.env.RAZORPAY_KEY_ID,
+      notes: payment.notes,
     });
-  } catch (error) {
-    console.error("Payment creation failed:", error);
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error("Payment creation failed:", err);
+    res.status(500).json({ error: err.message });
   }
 });
-paymentRouter.post("/webhook", async (req, res) => {
-  try {
-    const webhookSignature = req.headers("X-Razorpay-Signature");
-    const isWebHookValid = validateWebhookSignature(
-      JSON.stringify(req.body),
-      webhookSignature,
-      process.env.RAZORPAY_WEBHOOK_SECRET
-    );
-    if (!isWebHookValid) {
-      return res.status(400).json({ error: "Invalid webhook signature" });
-    }
-    //Update my payment status in DB
-    //Update the user as premium
 
-    //return success response to razorpay
-    const paymentDetails = req.body.payload.payment.entity;
+// Razorpay webhook
+paymentRouter.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  try {
+    const webhookSignature = req.headers["x-razorpay-signature"];
+    const body = req.body;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
+      .update(body)
+      .digest("hex");
+
+    if (webhookSignature !== expectedSignature) {
+      return res.status(400).json({ error: "Invalid signature" });
+    }
+
+    const payload = JSON.parse(body.toString());
+    const paymentDetails = payload.payload.payment.entity;
+
+    // Update payment in DB
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
     payment.status = paymentDetails.status;
     await payment.save();
-    const user = await User.findById({_id:payment.userId});
-    user.isPremium = true;
-    user.membershipType = paymentDetails.notes.membership_type;
-    await user.save();
-    // Handle the webhook event
-    const event = req.body.event;
-    // switch (event) {
-    //   case "payment.captured":
-    //     // Handle payment captured event
-    //     break;
-    //   case "payment.failed":
-    //     // Handle payment failed event
-    //     break;
-    //   default:
-    //     return res.status(400).json({ error: "Unknown event" });
-    // }
+
+    // Mark user as premium
+    const user = await User.findById(payment.userId);
+    if (user && paymentDetails.status === "captured") {
+      user.isPremium = true;
+      user.membershipType = paymentDetails.notes.membershipType || user.membershipType;
+      await user.save();
+    }
 
     res.status(200).json({ received: true });
   } catch (err) {
