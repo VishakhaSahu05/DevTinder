@@ -1,49 +1,57 @@
+// index.js
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
+const http = require("http");
 require("dotenv").config();
+var cors = require('cors');
 
 
+const server = http.createServer(app);
 
+
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true,
+  },
+});
+require("./utils/socket")(io);
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+app.use(express.json());
+app.use(cookieParser());
+
+// Routers
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const paymentRouter = require("./routes/payment");
 
-
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173"); 
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
-
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors({
-  origin: "http://localhost:5173", 
-  credentials: true,
-}));
-
-// ✅ Routes
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/request", requestRouter);
 app.use("/user", userRouter);
+app.use("/payment" , paymentRouter);
 
-// ✅ Root route to avoid "Cannot GET /"
+// Root route
 app.get("/", (req, res) => {
-  res.send("🚀 DevTinder Backend is running!");
+  res.send("DevTinder Backend is running");
 });
 
-// ✅ DB connect and start server
+// Connect DB and start server
 connectDB()
   .then(() => {
     console.log("Database connected");
-    app.listen(process.env.PORT,'0.0.0.0', () => console.log("Server running on port 5000"));
+    server.listen(process.env.PORT || 5000, "0.0.0.0", () =>
+      console.log("Server running on port", process.env.PORT || 5000)
+    );
   })
   .catch((err) => {
     console.error("DB connection failed", err);

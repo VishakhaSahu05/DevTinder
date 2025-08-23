@@ -23,10 +23,11 @@ authRouter.post("/login", async (req, res) => {
       //create JWT token
       const token = await user.getJWT();
       console.log(token);
-
-      //Add cookie to the token and send the respose back to the user
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 8 * 3600000),
+        httpOnly: true,
+        secure: false, // dev ke liye false, prod (https) ke liye true
+        sameSite: "lax", // cross-site me agar issues aaye to "none"
+        expires: new Date(Date.now() + 8 * 3600000), // 8 hours
       });
 
       res.status(200).json({
@@ -75,9 +76,14 @@ authRouter.post("/signup", async (req, res) => {
 
     const savedUser = await user.save();
     const token = await savedUser.getJWT();
+
     res.cookie("token", token, {
-      expires: new Date(Date.now() + 8 * 360000),
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      expires: new Date(Date.now() + 8 * 360000), // ~3 hours
     });
+
     res.status(200).json({
       message: "Signup successful",
       token,
@@ -100,6 +106,9 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/logout", async (req, res) => {
   res.cookie("token", null, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
     expires: new Date(Date.now()),
   });
   res.send("LogOut Successfully");

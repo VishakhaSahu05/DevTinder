@@ -127,3 +127,14 @@
 - /feed?page=2&limit=10 => 11-20 => .skip(10) & .limit(10);
 - /feed?page=3&limit=10 => 21-30 => .skip(20) & .limit(10);
 - skip = (page-1)*limit;
+
+## Razorpay Intergration
+- Sign up on razorpay & complete KYC
+- Create UI for premium page
+- Creating and API for create order backend
+- added my key and secret key in .env file
+- Intialized Razorpay in utils
+- creating orders on Razorpay
+- saved the order in payments collection
+- make the API dynamic
+- Setup webHook API in your live API

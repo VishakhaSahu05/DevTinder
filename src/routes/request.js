@@ -40,7 +40,7 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     const toUserId = req.params.toUserId.trim();
     const status = req.params.status.trim();
 
-    const allowedStatus = ["ignored", "interested"];
+    const allowedStatus = ["ignore", "interested"];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Invalid status type: " + status });
     }
@@ -84,7 +84,7 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
     const { status, requestId } = req.params;
     const cleanRequestId = requestId.trim();
 
-    const allowedStatus = ["accepted", "rejected"];
+    const allowedStatus = ["interested", "ignore"];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }

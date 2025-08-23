@@ -7,7 +7,7 @@ const userAuth = async (req , res , next)=>{
     return res.status(401).send("Please Login!");
    }
    //Validate the cookie
-   const decodedMessage = await jwt.verify(token , "DEV@Tinder$790");
+   const decodedMessage = await jwt.verify(token , process.env.JWT_SECRET);
    const {_id} = decodedMessage;
    const user = await User.findById(_id);
    if(!user){
