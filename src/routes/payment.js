@@ -13,7 +13,7 @@ paymentRouter.post("/create", userAuth, async (req, res) => {
   try {
     const { membershipType } = req.body;
     const type = membershipType.toLowerCase();
-    const { firstName, lastName, emailId, _id } = req.user;
+    const { firstName, LastName : lastName, emailId, _id } = req.user;
 
     if (!membershipAmount[type]) {
       return res.status(400).json({ error: "Invalid membership type" });
