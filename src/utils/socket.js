@@ -1,33 +1,59 @@
-// utils/socket.js (Corrected)
-// We no longer need to require("socket.io") here.
+const { Chat } = require("../models/chat");
 
-const initializeSocket = (io) => { // The 'io' instance is received as a parameter
-  io.on("connection", (socket) => {
-    // connection logic here
-    socket.on("joinChat", ({userId , targetUserId}) => {
-       const roomId = [userId , targetUserId].sort().join("_");
-       console.log("Joining Room : " + roomId);
-       socket.join(roomId);
-    });
+const initializeSocket = (io) => {
+  io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id);
 
-      socket.on("sendMessage", (data) => {
-      const { senderId, receiverId, text, firstName, time } = data;
-      const roomId = [senderId, receiverId].sort().join("_");
+    // Join a chat room
+    socket.on("joinChat", ({ userId, targetUserId }) => {
+      const roomId = [userId, targetUserId].sort().join("_");
+      console.log("Joining Room:", roomId);
+      socket.join(roomId);
+    });
 
-      console.log("Message received:", text, "-> Room:", roomId);
+    // Send message
+    socket.on("sendMessage", async (data) => {
+      try {
+        const { senderId, receiverId, text, firstName, time } = data;
+        const roomId = [senderId, receiverId].sort().join("_");
 
-      // ✅ This is the fix for messages sending twice.
-      // It broadcasts to everyone in the room EXCEPT the sender.
-      socket.to(roomId).emit("receiveMessage", {
-        senderId,
-        receiverId,
-        firstName,
-        text,
-        time,
-      });
-    });
-     socket.on("disconnect", () => {});
-  });
+        console.log("Message received:", text, "-> Room:", roomId);
+
+        let chat = await Chat.findOne({
+          participants: { $all: [senderId, receiverId] },
+        });
+
+        if (!chat) {
+          chat = new Chat({
+            participants: [senderId, receiverId],
+            messages: [],
+          });
+        }
+
+        chat.messages.push({
+          senderId,
+          text,
+        });
+
+        await chat.save();
+
+        // Send to everyone in the room
+        io.to(roomId).emit("receiveMessage", {
+          senderId,
+          receiverId,
+          firstName,
+          text,
+          time,
+        });
+      } catch (err) {
+        console.log("Error saving message:", err);
+      }
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected:", socket.id);
+    });
+  });
 };
 
 module.exports = initializeSocket;
